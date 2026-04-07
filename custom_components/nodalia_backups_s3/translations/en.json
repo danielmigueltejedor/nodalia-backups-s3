@@ -1,0 +1,87 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect Nodalia Wasabi Backups",
+        "description": "Enter the customer installation details. The Wasabi endpoint is generated automatically from the selected region.",
+        "data": {
+          "installation_name": "Installation name",
+          "bucket": "Bucket",
+          "access_key_id": "Access Key",
+          "secret_access_key": "Secret Key",
+          "region": "Region",
+          "root_path": "Root path"
+        },
+        "data_description": {
+          "installation_name": "Friendly name of the client or installation. It is converted into a clean slug for storage isolation.",
+          "bucket": "Existing Wasabi bucket where the backups will be stored.",
+          "access_key_id": "Access key with permission to access this installation prefix.",
+          "secret_access_key": "Secret key for the access key above.",
+          "region": "Wasabi region, for example eu-central-1.",
+          "root_path": "Optional folder before the installation slug. Backups are stored inside that folder and the generated installation slug."
+        }
+      },
+      "reauth_confirm": {
+        "title": "Update Wasabi credentials",
+        "description": "The stored credentials for installation {installation_name} in bucket {bucket} are no longer valid. Enter fresh credentials.",
+        "data": {
+          "access_key_id": "Access Key",
+          "secret_access_key": "Secret Key"
+        },
+        "data_description": {
+          "access_key_id": "New or rotated access key.",
+          "secret_access_key": "Secret for the key above."
+        }
+      },
+      "reconfigure": {
+        "title": "Edit Nodalia Wasabi Backups",
+        "description": "Adjust the Wasabi connection details. The integration validates list, write and delete access before saving.",
+        "data": {
+          "installation_name": "Installation name",
+          "bucket": "Bucket",
+          "access_key_id": "Access Key",
+          "secret_access_key": "Secret Key",
+          "region": "Region",
+          "root_path": "Root path"
+        },
+        "data_description": {
+          "installation_name": "Friendly name of the client or installation.",
+          "bucket": "Existing Wasabi bucket where the backups will be stored.",
+          "access_key_id": "Access key with permission to access this installation prefix.",
+          "secret_access_key": "Secret key for the access key above.",
+          "region": "Wasabi region, for example eu-central-1.",
+          "root_path": "Optional folder before the installation slug."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not reach Wasabi from this Home Assistant instance.",
+      "invalid_bucket_name": "The bucket name is invalid.",
+      "bucket_not_found": "The bucket does not exist or is not reachable with these credentials.",
+      "invalid_credentials": "The credentials do not have the required access for this installation prefix.",
+      "invalid_region": "The Wasabi region is invalid.",
+      "invalid_installation_name": "The installation name must contain letters or numbers."
+    },
+    "abort": {
+      "already_configured": "An entry for this bucket and installation prefix already exists.",
+      "reauth_successful": "Credentials updated successfully."
+    }
+  },
+  "exceptions": {
+    "cannot_connect": {
+      "message": "Nodalia Wasabi Backups cannot reach Wasabi."
+    },
+    "invalid_bucket_name": {
+      "message": "The bucket name is invalid."
+    },
+    "bucket_not_found": {
+      "message": "The bucket does not exist or is not reachable."
+    },
+    "invalid_credentials": {
+      "message": "The credentials cannot access the configured installation prefix."
+    },
+    "invalid_region": {
+      "message": "The configured Wasabi region is invalid."
+    }
+  }
+}

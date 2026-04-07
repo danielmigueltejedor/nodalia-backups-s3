@@ -1,0 +1,10 @@
+{
+  "domain": "nodalia_backups_s3",
+  "name": "Nodalia Wasabi Backups",
+  "config_flow": true,
+  "dependencies": ["backup"],
+  "integration_type": "service",
+  "iot_class": "cloud_push",
+  "requirements": ["aiobotocore>=2.6.0,<3.0.0"],
+  "version": "0.1.0"
+}
