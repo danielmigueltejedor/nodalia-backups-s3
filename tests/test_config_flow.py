@@ -19,6 +19,7 @@ from custom_components.nodalia_backups_s3.const import (
     CONF_INSTALLATION_NAME,
     CONF_PREFIX,
     CONF_REGION,
+    DEFAULT_BUCKET,
     DEFAULT_REGION,
 )
 
@@ -44,9 +45,9 @@ class TestProbeConnection:
         _probe_connection(
             key_id="ACCESS",
             secret="SECRET",
-            region="eu-central-1",
-            bucket="nodalia-demo",
-            prefix="clients/demo",
+            region="eu-west-2",
+            bucket="nodalia-backups",
+            prefix="homeassistant/demo",
         )
 
     @patch("custom_components.nodalia_backups_s3.config_flow.AioSession")
@@ -71,9 +72,9 @@ class TestProbeConnection:
             _probe_connection(
                 key_id="ACCESS",
                 secret="SECRET",
-                region="eu-central-1",
-                bucket="nodalia-demo",
-                prefix="clients/demo",
+                region="eu-west-2",
+                bucket="nodalia-backups",
+                prefix="homeassistant/demo",
             )
 
     @patch("custom_components.nodalia_backups_s3.config_flow.AioSession")
@@ -95,9 +96,9 @@ class TestProbeConnection:
             _probe_connection(
                 key_id="ACCESS",
                 secret="SECRET",
-                region="eu-central-1",
-                bucket="nodalia-demo",
-                prefix="clients/demo",
+                region="eu-west-2",
+                bucket="nodalia-backups",
+                prefix="homeassistant/demo",
             )
 
 
@@ -115,27 +116,27 @@ class TestPrepareData:
         data, errors = flow._prepare_data(
             {
                 "installation_name": "Cliente Demo",
-                "bucket": "nodalia-demo",
+                "bucket": "nodalia-backups",
                 "access_key_id": "ACCESS",
                 "secret_access_key": "SECRET",
-                "region": "EU-CENTRAL-1",
-                "root_path": "Clientes",
+                "region": "EU-WEST-2",
+                "root_path": "HomeAssistant",
             }
         )
 
         assert errors == {}
-        assert data[CONF_REGION] == "eu-central-1"
-        assert data[CONF_PREFIX] == "clientes/cliente-demo"
+        assert data[CONF_REGION] == "eu-west-2"
+        assert data[CONF_PREFIX] == "homeassistant/cliente-demo"
 
     async def test_prepare_data_rejects_empty_installation_name(self, flow):
         _, errors = flow._prepare_data(
             {
                 "installation_name": "///",
-                "bucket": "nodalia-demo",
+                "bucket": "nodalia-backups",
                 "access_key_id": "ACCESS",
                 "secret_access_key": "SECRET",
-                "region": "eu-central-1",
-                "root_path": "clients",
+                "region": "eu-west-2",
+                "root_path": "homeassistant",
             }
         )
 
@@ -181,3 +182,8 @@ class TestSchemas:
         for key in SCHEMA_SETUP.schema:
             if str(key) == CONF_REGION:
                 assert key.default() == DEFAULT_REGION
+
+    def test_setup_schema_uses_default_bucket(self):
+        for key in SCHEMA_SETUP.schema:
+            if str(key) == CONF_BUCKET:
+                assert key.default() == DEFAULT_BUCKET

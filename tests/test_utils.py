@@ -32,6 +32,6 @@ def test_build_storage_prefix_combines_root_and_slug():
 
 def test_build_wasabi_endpoint_uses_region():
     assert (
-        build_wasabi_endpoint("EU-CENTRAL-1")
-        == "https://s3.eu-central-1.wasabisys.com"
+        build_wasabi_endpoint("EU-WEST-2")
+        == "https://s3.eu-west-2.wasabisys.com"
     )

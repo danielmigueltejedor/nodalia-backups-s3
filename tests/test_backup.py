@@ -26,7 +26,9 @@ from custom_components.nodalia_backups_s3.const import (
 )
 
 
-def _make_agent(mock_gateway, bucket="nodalia-demo", prefix="clients/cliente-demo"):
+def _make_agent(
+    mock_gateway, bucket="nodalia-backups", prefix="homeassistant/cliente-demo"
+):
     entry = MagicMock()
     entry.runtime_data = mock_gateway
     entry.data = {
@@ -87,8 +89,8 @@ class TestAgentConstruction:
         assert agent.domain == DOMAIN
 
     def test_root_uses_prefix(self, mock_gateway):
-        agent = _make_agent(mock_gateway, prefix="clientes/demo")
-        assert agent._root == f"clientes/demo/{STORAGE_DIR}/"
+        agent = _make_agent(mock_gateway, prefix="homeassistant/demo")
+        assert agent._root == f"homeassistant/demo/{STORAGE_DIR}/"
 
 
 class TestListing:
@@ -222,8 +224,8 @@ class TestModuleHelpers:
         entry = MagicMock()
         entry.runtime_data = MagicMock()
         entry.data = {
-            CONF_BUCKET: "nodalia-demo",
-            CONF_PREFIX: "clients/demo",
+            CONF_BUCKET: "nodalia-backups",
+            CONF_PREFIX: "homeassistant/demo",
             CONF_ROOT_PATH: DEFAULT_ROOT_PATH,
             CONF_INSTALLATION_NAME: "Demo",
         }

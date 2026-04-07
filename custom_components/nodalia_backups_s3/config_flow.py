@@ -31,6 +31,7 @@ from .const import (
     CONF_REGION,
     CONF_ROOT_PATH,
     CONF_SECRET_ACCESS_KEY,
+    DEFAULT_BUCKET,
     DEFAULT_REGION,
     DEFAULT_ROOT_PATH,
     DOMAIN,
@@ -80,7 +81,7 @@ def _probe_connection(
 SCHEMA_SETUP = vol.Schema(
     {
         vol.Required(CONF_INSTALLATION_NAME): cv.string,
-        vol.Required(CONF_BUCKET): cv.string,
+        vol.Required(CONF_BUCKET, default=DEFAULT_BUCKET): cv.string,
         vol.Required(CONF_ACCESS_KEY_ID): cv.string,
         vol.Required(CONF_SECRET_ACCESS_KEY): _PASSWORD,
         vol.Required(CONF_REGION, default=DEFAULT_REGION): cv.string,

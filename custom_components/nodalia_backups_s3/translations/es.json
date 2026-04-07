@@ -14,11 +14,11 @@
         },
         "data_description": {
           "installation_name": "Nombre legible del cliente o de la instalacion. Se convierte en un slug limpio para aislar los datos.",
-          "bucket": "Bucket existente de Wasabi donde se guardaran los backups.",
+          "bucket": "Bucket existente de Wasabi donde se guardaran los backups. El formulario empieza con nodalia-backups, pero puedes cambiarlo.",
           "access_key_id": "Clave con permiso para acceder al prefijo de esta instalacion.",
           "secret_access_key": "Secreto asociado a la clave anterior.",
-          "region": "Region de Wasabi, por ejemplo eu-central-1.",
-          "root_path": "Carpeta opcional antes del slug de la instalacion. Los backups se guardan dentro de esa carpeta y del slug generado."
+          "region": "Region de Wasabi. El formulario empieza con eu-west-2, pero puedes cambiarla.",
+          "root_path": "Carpeta opcional antes del slug de la instalacion. El formulario empieza con homeassistant, pero puedes cambiarla."
         }
       },
       "reauth_confirm": {
@@ -46,11 +46,11 @@
         },
         "data_description": {
           "installation_name": "Nombre legible del cliente o de la instalacion.",
-          "bucket": "Bucket existente de Wasabi donde se guardaran los backups.",
+          "bucket": "Bucket existente de Wasabi donde se guardaran los backups. El formulario empieza con nodalia-backups, pero puedes cambiarlo.",
           "access_key_id": "Clave con permiso para acceder al prefijo de esta instalacion.",
           "secret_access_key": "Secreto asociado a la clave anterior.",
-          "region": "Region de Wasabi, por ejemplo eu-central-1.",
-          "root_path": "Carpeta opcional antes del slug de la instalacion."
+          "region": "Region de Wasabi. El formulario empieza con eu-west-2, pero puedes cambiarla.",
+          "root_path": "Carpeta opcional antes del slug de la instalacion. El formulario empieza con homeassistant, pero puedes cambiarla."
         }
       }
     },

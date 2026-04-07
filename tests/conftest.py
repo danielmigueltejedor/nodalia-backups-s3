@@ -66,12 +66,12 @@ def sample_config():
     """Return a representative config-entry payload."""
     return {
         "installation_name": "Cliente Demo",
-        "bucket": "nodalia-demo",
+        "bucket": "nodalia-backups",
         "access_key_id": "ACCESS123",
         "secret_access_key": "SECRET123",
-        "region": "eu-central-1",
-        "root_path": "clients",
-        "prefix": "clients/cliente-demo",
+        "region": "eu-west-2",
+        "root_path": "homeassistant",
+        "prefix": "homeassistant/cliente-demo",
     }
 
 

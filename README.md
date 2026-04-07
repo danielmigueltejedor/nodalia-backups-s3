@@ -15,25 +15,25 @@ Cada instalacion queda aislada en su propio prefijo:
 
 ```text
 <bucket>/
-  clients/
+  homeassistant/
     <cliente-slug>/
       backups/
         <backup-id>.tar
         <backup-id>.metadata.json
 ```
 
-Si necesitas otra jerarquia, el campo `Root path` permite cambiar `clients/` por otra carpeta base.
+Si necesitas otra jerarquia, el campo `Root path` permite cambiar `homeassistant/` por otra carpeta base.
 
 ## Configuracion
 
 Desde `Settings > Devices & Services > Add Integration`, busca `Nodalia Wasabi Backups` y completa:
 
 - `Installation name`: nombre legible del cliente o de la instalacion
-- `Bucket`: bucket de Wasabi donde vive el espacio de backups
+- `Bucket`: bucket de Wasabi, predefinido como `nodalia-backups` aunque editable
 - `Access Key`: credencial del cliente
 - `Secret Key`: secreto de la credencial
-- `Region`: region de Wasabi, por ejemplo `eu-central-1`
-- `Root path`: carpeta base opcional, por defecto `clients`
+- `Region`: region de Wasabi, por defecto `eu-west-2`
+- `Root path`: carpeta base opcional, por defecto `homeassistant`
 
 La integracion genera automaticamente el endpoint `https://s3.<region>.wasabisys.com` y el prefijo final `<root_path>/<installation_slug>`.
 
@@ -52,7 +52,7 @@ Lo ideal es entregar a cada cliente una credencial distinta, limitada solo a su 
       "Resource": ["arn:aws:s3:::TU_BUCKET"],
       "Condition": {
         "StringLike": {
-          "s3:prefix": ["clients/cliente-demo/*"]
+          "s3:prefix": ["homeassistant/cliente-demo/*"]
         }
       }
     },
@@ -66,7 +66,7 @@ Lo ideal es entregar a cada cliente una credencial distinta, limitada solo a su 
         "s3:AbortMultipartUpload",
         "s3:ListMultipartUploadParts"
       ],
-      "Resource": ["arn:aws:s3:::TU_BUCKET/clients/cliente-demo/*"]
+      "Resource": ["arn:aws:s3:::TU_BUCKET/homeassistant/cliente-demo/*"]
     }
   ]
 }

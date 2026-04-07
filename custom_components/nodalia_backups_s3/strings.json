@@ -14,11 +14,11 @@
         },
         "data_description": {
           "installation_name": "Friendly name of the client or installation. It is converted into a clean slug for storage isolation.",
-          "bucket": "Existing Wasabi bucket where the backups will be stored.",
+          "bucket": "Existing Wasabi bucket where the backups will be stored. The form starts with nodalia-backups, but you can change it.",
           "access_key_id": "Access key with permission to access this installation prefix.",
           "secret_access_key": "Secret key for the access key above.",
-          "region": "Wasabi region, for example eu-central-1.",
-          "root_path": "Optional folder before the installation slug. Backups are stored inside that folder and the generated installation slug."
+          "region": "Wasabi region. The form starts with eu-west-2, but you can change it.",
+          "root_path": "Optional folder before the installation slug. The form starts with homeassistant, but you can change it."
         }
       },
       "reauth_confirm": {
@@ -46,11 +46,11 @@
         },
         "data_description": {
           "installation_name": "Friendly name of the client or installation.",
-          "bucket": "Existing Wasabi bucket where the backups will be stored.",
+          "bucket": "Existing Wasabi bucket where the backups will be stored. The form starts with nodalia-backups, but you can change it.",
           "access_key_id": "Access key with permission to access this installation prefix.",
           "secret_access_key": "Secret key for the access key above.",
-          "region": "Wasabi region, for example eu-central-1.",
-          "root_path": "Optional folder before the installation slug."
+          "region": "Wasabi region. The form starts with eu-west-2, but you can change it.",
+          "root_path": "Optional folder before the installation slug. The form starts with homeassistant, but you can change it."
         }
       }
     },
