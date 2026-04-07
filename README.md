@@ -28,19 +28,22 @@ Si necesitas otra jerarquia, el campo `Root path` permite cambiar `homeassistant
 
 Desde `Settings > Devices & Services > Add Integration`, busca `Nodalia Wasabi Backups` y completa:
 
-- `Installation name`: nombre legible del cliente o de la instalacion
+- `Installation name`: carpeta principal del cliente
+- `Additional house`: subcarpeta opcional para una segunda vivienda, oficina o instalacion extra
 - `Bucket`: bucket de Wasabi, predefinido como `nodalia-backups` aunque editable
 - `Access Key`: credencial del cliente
 - `Secret Key`: secreto de la credencial
 - `Region`: region de Wasabi, por defecto `eu-west-2`
 - `Root path`: carpeta base opcional, por defecto `homeassistant`
 
-La integracion genera automaticamente el endpoint `https://s3.<region>.wasabisys.com` y el prefijo final `<root_path>/<installation_slug>`.
+La integracion genera automaticamente el endpoint `https://s3.<region>.wasabisys.com` y el prefijo final `<root_path>/<installation_slug>[/<additional_house_slug>]`.
 
-Si quieres separar varias instalaciones de un mismo cliente, puedes usar `/` en `Installation name`. Por ejemplo:
+Si un cliente tiene varias instalaciones, usa `Additional house` para separarlas. Por ejemplo:
 
-- `cliente/casa1` -> `homeassistant/cliente/casa1`
-- `cliente/casa2` -> `homeassistant/cliente/casa2`
+- `Installation name = cliente`, `Additional house = casa1` -> `homeassistant/cliente/casa1`
+- `Installation name = cliente`, `Additional house = casa2` -> `homeassistant/cliente/casa2`
+
+Tambien se sigue admitiendo `/` dentro de `Installation name` si necesitas una estructura mas avanzada.
 
 ## Recomendacion de seguridad
 

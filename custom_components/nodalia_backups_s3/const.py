@@ -12,6 +12,7 @@ CONF_SECRET_ACCESS_KEY: Final = "secret_access_key"
 CONF_BUCKET: Final = "bucket"
 CONF_REGION: Final = "region"
 CONF_INSTALLATION_NAME: Final = "installation_name"
+CONF_ADDITIONAL_HOUSE: Final = "additional_house"
 CONF_ROOT_PATH: Final = "root_path"
 CONF_PREFIX: Final = "prefix"
 

@@ -25,6 +25,7 @@ from homeassistant.helpers.selector import (
 
 from .const import (
     CONF_ACCESS_KEY_ID,
+    CONF_ADDITIONAL_HOUSE,
     CONF_BUCKET,
     CONF_INSTALLATION_NAME,
     CONF_PREFIX,
@@ -39,6 +40,8 @@ from .const import (
     STORAGE_DIR,
 )
 from .utils import (
+    append_storage_subpath,
+    build_entry_title,
     build_storage_prefix,
     build_wasabi_endpoint,
     create_s3_client_config,
@@ -81,6 +84,7 @@ def _probe_connection(
 SCHEMA_SETUP = vol.Schema(
     {
         vol.Required(CONF_INSTALLATION_NAME): cv.string,
+        vol.Optional(CONF_ADDITIONAL_HOUSE): cv.string,
         vol.Required(CONF_BUCKET, default=DEFAULT_BUCKET): cv.string,
         vol.Required(CONF_ACCESS_KEY_ID): cv.string,
         vol.Required(CONF_SECRET_ACCESS_KEY): _PASSWORD,
@@ -99,6 +103,7 @@ SCHEMA_CREDENTIALS = vol.Schema(
 SCHEMA_FULL_EDIT = vol.Schema(
     {
         vol.Required(CONF_INSTALLATION_NAME): cv.string,
+        vol.Optional(CONF_ADDITIONAL_HOUSE): cv.string,
         vol.Required(CONF_BUCKET): cv.string,
         vol.Required(CONF_ACCESS_KEY_ID): cv.string,
         vol.Optional(CONF_SECRET_ACCESS_KEY): _PASSWORD,
@@ -127,7 +132,10 @@ class NodaliaWasabiBackupsConfigFlow(ConfigFlow, domain=DOMAIN):
                 errors = await self._try_connect(data)
             if not errors:
                 return self.async_create_entry(
-                    title=data[CONF_INSTALLATION_NAME],
+                    title=build_entry_title(
+                        data[CONF_INSTALLATION_NAME],
+                        data.get(CONF_ADDITIONAL_HOUSE),
+                    ),
                     data=data,
                 )
 
@@ -202,7 +210,10 @@ class NodaliaWasabiBackupsConfigFlow(ConfigFlow, domain=DOMAIN):
                 return self.async_update_reload_and_abort(
                     target,
                     data_updates=data,
-                    title=data[CONF_INSTALLATION_NAME],
+                    title=build_entry_title(
+                        data[CONF_INSTALLATION_NAME],
+                        data.get(CONF_ADDITIONAL_HOUSE),
+                    ),
                 )
 
         suggested_values = {
@@ -210,6 +221,7 @@ class NodaliaWasabiBackupsConfigFlow(ConfigFlow, domain=DOMAIN):
             for key, value in target.data.items()
             if key in {
                 CONF_INSTALLATION_NAME,
+                CONF_ADDITIONAL_HOUSE,
                 CONF_BUCKET,
                 CONF_ACCESS_KEY_ID,
                 CONF_REGION,
@@ -232,6 +244,7 @@ class NodaliaWasabiBackupsConfigFlow(ConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
 
         data[CONF_INSTALLATION_NAME] = data[CONF_INSTALLATION_NAME].strip()
+        data[CONF_ADDITIONAL_HOUSE] = data.get(CONF_ADDITIONAL_HOUSE, "").strip()
         data[CONF_BUCKET] = data[CONF_BUCKET].strip()
         data[CONF_ROOT_PATH] = data.get(CONF_ROOT_PATH, DEFAULT_ROOT_PATH).strip()
 
@@ -248,11 +261,16 @@ class NodaliaWasabiBackupsConfigFlow(ConfigFlow, domain=DOMAIN):
 
         if not errors:
             try:
-                data[CONF_PREFIX] = build_storage_prefix(
-                    data[CONF_ROOT_PATH], data[CONF_INSTALLATION_NAME]
-                )
+                prefix = build_storage_prefix(data[CONF_ROOT_PATH], data[CONF_INSTALLATION_NAME])
             except ValueError:
                 errors[CONF_INSTALLATION_NAME] = "invalid_installation_name"
+            else:
+                try:
+                    data[CONF_PREFIX] = append_storage_subpath(
+                        prefix, data[CONF_ADDITIONAL_HOUSE]
+                    )
+                except ValueError:
+                    errors[CONF_ADDITIONAL_HOUSE] = "invalid_additional_house"
 
         return data, errors
 

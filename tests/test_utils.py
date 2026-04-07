@@ -3,6 +3,8 @@
 import pytest
 
 from custom_components.nodalia_backups_s3.utils import (
+    append_storage_subpath,
+    build_entry_title,
     build_storage_prefix,
     build_wasabi_endpoint,
     normalize_installation_path,
@@ -48,6 +50,21 @@ def test_build_storage_prefix_preserves_subfolders_in_installation_name():
         build_storage_prefix("homeassistant", "cliente/casa1")
         == "homeassistant/cliente/casa1"
     )
+
+
+def test_append_storage_subpath_adds_additional_house():
+    assert (
+        append_storage_subpath("homeassistant/cliente", "casa1")
+        == "homeassistant/cliente/casa1"
+    )
+
+
+def test_append_storage_subpath_keeps_prefix_when_empty():
+    assert append_storage_subpath("homeassistant/cliente", "") == "homeassistant/cliente"
+
+
+def test_build_entry_title_uses_additional_house_when_present():
+    assert build_entry_title("Cliente Demo", "Casa 1") == "Cliente Demo / Casa 1"
 
 
 def test_build_wasabi_endpoint_uses_region():

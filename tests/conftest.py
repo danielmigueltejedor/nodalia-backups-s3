@@ -66,6 +66,7 @@ def sample_config():
     """Return a representative config-entry payload."""
     return {
         "installation_name": "Cliente Demo",
+        "additional_house": "",
         "bucket": "nodalia-backups",
         "access_key_id": "ACCESS123",
         "secret_access_key": "SECRET123",

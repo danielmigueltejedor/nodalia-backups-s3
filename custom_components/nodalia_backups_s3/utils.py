@@ -74,6 +74,22 @@ def build_storage_prefix(root_path: str, installation_name: str) -> str:
     return f"{parent}/{installation}" if parent else installation
 
 
+def append_storage_subpath(prefix: str, additional_house: str | None) -> str:
+    """Append an optional extra house/subfolder path to an existing prefix."""
+    if not additional_house or not additional_house.strip():
+        return prefix
+    suffix = normalize_installation_path(additional_house)
+    return f"{prefix}/{suffix}"
+
+
+def build_entry_title(installation_name: str, additional_house: str | None) -> str:
+    """Build the Home Assistant entry title shown to the user."""
+    base = installation_name.strip()
+    if not additional_house or not additional_house.strip():
+        return base
+    return f"{base} / {additional_house.strip()}"
+
+
 def build_wasabi_endpoint(region: str) -> str:
     """Build a Wasabi S3 endpoint from a region."""
     return WASABI_ENDPOINT_TEMPLATE.format(region=normalize_region(region))

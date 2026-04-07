@@ -6,6 +6,7 @@
         "description": "Introduce los datos de la instalacion del cliente. El endpoint de Wasabi se genera automaticamente a partir de la region seleccionada.",
         "data": {
           "installation_name": "Nombre de la instalacion",
+          "additional_house": "Casa adicional",
           "bucket": "Bucket",
           "access_key_id": "Access Key",
           "secret_access_key": "Secret Key",
@@ -13,7 +14,8 @@
           "root_path": "Ruta raiz"
         },
         "data_description": {
-          "installation_name": "Nombre legible del cliente o de la instalacion. Usa / para crear subcarpetas, por ejemplo cliente/casa1.",
+          "installation_name": "Nombre principal de la carpeta del cliente.",
+          "additional_house": "Casa o subcarpeta opcional dentro de la carpeta del cliente, por ejemplo casa1 o casa2.",
           "bucket": "Bucket existente de Wasabi donde se guardaran los backups. El formulario empieza con nodalia-backups, pero puedes cambiarlo.",
           "access_key_id": "Clave con permiso para acceder al prefijo de esta instalacion.",
           "secret_access_key": "Secreto asociado a la clave anterior.",
@@ -38,6 +40,7 @@
         "description": "Ajusta los datos de conexion con Wasabi. La integracion valida permisos de lectura, escritura y borrado antes de guardar.",
         "data": {
           "installation_name": "Nombre de la instalacion",
+          "additional_house": "Casa adicional",
           "bucket": "Bucket",
           "access_key_id": "Access Key",
           "secret_access_key": "Secret Key",
@@ -45,7 +48,8 @@
           "root_path": "Ruta raiz"
         },
         "data_description": {
-          "installation_name": "Nombre legible del cliente o de la instalacion. Usa / para crear subcarpetas, por ejemplo cliente/casa1.",
+          "installation_name": "Nombre principal de la carpeta del cliente.",
+          "additional_house": "Casa o subcarpeta opcional dentro de la carpeta del cliente, por ejemplo casa1 o casa2.",
           "bucket": "Bucket existente de Wasabi donde se guardaran los backups. El formulario empieza con nodalia-backups, pero puedes cambiarlo.",
           "access_key_id": "Clave con permiso para acceder al prefijo de esta instalacion.",
           "secret_access_key": "Secreto asociado a la clave anterior. Dejalo vacio para conservar el secreto actual.",
@@ -60,7 +64,8 @@
       "bucket_not_found": "El bucket no existe o no es accesible con estas credenciales.",
       "invalid_credentials": "Las credenciales no tienen el acceso necesario para este prefijo de instalacion.",
       "invalid_region": "La region de Wasabi no es valida.",
-      "invalid_installation_name": "El nombre de la instalacion debe contener letras o numeros."
+      "invalid_installation_name": "El nombre de la instalacion debe contener letras o numeros.",
+      "invalid_additional_house": "La casa adicional debe contener letras o numeros."
     },
     "abort": {
       "already_configured": "Ya existe una entrada para este bucket y este prefijo de instalacion.",

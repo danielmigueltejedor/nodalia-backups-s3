@@ -15,6 +15,7 @@ from custom_components.nodalia_backups_s3.config_flow import (
     NodaliaWasabiBackupsConfigFlow,
 )
 from custom_components.nodalia_backups_s3.const import (
+    CONF_ADDITIONAL_HOUSE,
     CONF_BUCKET,
     CONF_INSTALLATION_NAME,
     CONF_PREFIX,
@@ -116,6 +117,7 @@ class TestPrepareData:
         data, errors = flow._prepare_data(
             {
                 "installation_name": "Cliente Demo",
+                "additional_house": "",
                 "bucket": "nodalia-backups",
                 "access_key_id": "ACCESS",
                 "secret_access_key": "SECRET",
@@ -128,10 +130,28 @@ class TestPrepareData:
         assert data[CONF_REGION] == "eu-west-2"
         assert data[CONF_PREFIX] == "homeassistant/cliente-demo"
 
-    async def test_prepare_data_preserves_installation_subfolders(self, flow):
+    async def test_prepare_data_builds_additional_house_subfolder(self, flow):
+        data, errors = flow._prepare_data(
+            {
+                "installation_name": "Cliente",
+                "additional_house": "Casa 1",
+                "bucket": "nodalia-backups",
+                "access_key_id": "ACCESS",
+                "secret_access_key": "SECRET",
+                "region": "eu-west-2",
+                "root_path": "homeassistant",
+            }
+        )
+
+        assert errors == {}
+        assert data[CONF_PREFIX] == "homeassistant/cliente/casa-1"
+        assert data[CONF_ADDITIONAL_HOUSE] == "Casa 1"
+
+    async def test_prepare_data_allows_nested_path_for_main_installation(self, flow):
         data, errors = flow._prepare_data(
             {
                 "installation_name": "Cliente/Casa 1",
+                "additional_house": "",
                 "bucket": "nodalia-backups",
                 "access_key_id": "ACCESS",
                 "secret_access_key": "SECRET",
@@ -147,6 +167,7 @@ class TestPrepareData:
         _, errors = flow._prepare_data(
             {
                 "installation_name": "///",
+                "additional_house": "",
                 "bucket": "nodalia-backups",
                 "access_key_id": "ACCESS",
                 "secret_access_key": "SECRET",
@@ -156,6 +177,21 @@ class TestPrepareData:
         )
 
         assert errors == {CONF_INSTALLATION_NAME: "invalid_installation_name"}
+
+    async def test_prepare_data_rejects_invalid_additional_house(self, flow):
+        _, errors = flow._prepare_data(
+            {
+                "installation_name": "Cliente Demo",
+                "additional_house": "///",
+                "bucket": "nodalia-backups",
+                "access_key_id": "ACCESS",
+                "secret_access_key": "SECRET",
+                "region": "eu-west-2",
+                "root_path": "homeassistant",
+            }
+        )
+
+        assert errors == {CONF_ADDITIONAL_HOUSE: "invalid_additional_house"}
 
     async def test_reconfigure_can_keep_existing_secret(self, flow, sample_config):
         target = MagicMock()
@@ -169,6 +205,7 @@ class TestPrepareData:
         result = await flow.async_step_reconfigure(
             {
                 "installation_name": "Cliente Demo",
+                "additional_house": "",
                 "bucket": "nodalia-backups",
                 "access_key_id": "ACCESS123",
                 "region": "eu-west-2",
@@ -214,6 +251,7 @@ class TestSchemas:
     def test_setup_schema_contains_expected_fields(self):
         schema_keys = {str(key) for key in SCHEMA_SETUP.schema}
         assert CONF_INSTALLATION_NAME in schema_keys
+        assert CONF_ADDITIONAL_HOUSE in schema_keys
         assert CONF_BUCKET in schema_keys
         assert CONF_REGION in schema_keys
 

@@ -6,6 +6,7 @@
         "description": "Enter the customer installation details. The Wasabi endpoint is generated automatically from the selected region.",
         "data": {
           "installation_name": "Installation name",
+          "additional_house": "Additional house",
           "bucket": "Bucket",
           "access_key_id": "Access Key",
           "secret_access_key": "Secret Key",
@@ -13,7 +14,8 @@
           "root_path": "Root path"
         },
         "data_description": {
-          "installation_name": "Friendly name of the client or installation. Use / to create subfolders, for example cliente/casa1.",
+          "installation_name": "Main customer folder name.",
+          "additional_house": "Optional extra house or subfolder inside the customer folder, for example casa1 or casa2.",
           "bucket": "Existing Wasabi bucket where the backups will be stored. The form starts with nodalia-backups, but you can change it.",
           "access_key_id": "Access key with permission to access this installation prefix.",
           "secret_access_key": "Secret key for the access key above.",
@@ -38,6 +40,7 @@
         "description": "Adjust the Wasabi connection details. The integration validates list, write and delete access before saving.",
         "data": {
           "installation_name": "Installation name",
+          "additional_house": "Additional house",
           "bucket": "Bucket",
           "access_key_id": "Access Key",
           "secret_access_key": "Secret Key",
@@ -45,7 +48,8 @@
           "root_path": "Root path"
         },
         "data_description": {
-          "installation_name": "Friendly name of the client or installation. Use / to create subfolders, for example cliente/casa1.",
+          "installation_name": "Main customer folder name.",
+          "additional_house": "Optional extra house or subfolder inside the customer folder, for example casa1 or casa2.",
           "bucket": "Existing Wasabi bucket where the backups will be stored. The form starts with nodalia-backups, but you can change it.",
           "access_key_id": "Access key with permission to access this installation prefix.",
           "secret_access_key": "Secret key for the access key above. Leave empty to keep the current secret.",
@@ -60,7 +64,8 @@
       "bucket_not_found": "The bucket does not exist or is not reachable with these credentials.",
       "invalid_credentials": "The credentials do not have the required access for this installation prefix.",
       "invalid_region": "The Wasabi region is invalid.",
-      "invalid_installation_name": "The installation name must contain letters or numbers."
+      "invalid_installation_name": "The installation name must contain letters or numbers.",
+      "invalid_additional_house": "The additional house must contain letters or numbers."
     },
     "abort": {
       "already_configured": "An entry for this bucket and installation prefix already exists.",
