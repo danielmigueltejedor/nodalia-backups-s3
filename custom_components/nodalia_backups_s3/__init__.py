@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Any, cast
 
 from aiobotocore.session import AioSession
@@ -22,16 +23,27 @@ from homeassistant.exceptions import (
 from .const import (
     AGENT_LISTENER_KEY,
     CONF_ACCESS_KEY_ID,
+    CONF_ADDITIONAL_HOUSE,
     CONF_BUCKET,
+    CONF_INSTALLATION_NAME,
     CONF_PREFIX,
     CONF_REGION,
+    CONF_ROOT_PATH,
     CONF_SECRET_ACCESS_KEY,
+    DEFAULT_ROOT_PATH,
     DOMAIN,
     STORAGE_DIR,
 )
-from .utils import build_wasabi_endpoint, create_s3_client_config
+from .utils import (
+    append_storage_subpath,
+    build_entry_title,
+    build_storage_prefix,
+    build_wasabi_endpoint,
+    create_s3_client_config,
+)
 
 NodaliaBackupsEntry = ConfigEntry["WasabiStorageGateway"]
+_LOGGER = logging.getLogger(__name__)
 
 
 class WasabiStorageGateway:
@@ -110,6 +122,42 @@ class WasabiStorageGateway:
 
     async def abort_multipart_upload(self, **kwargs: Any) -> dict[str, Any]:
         return await self._client.abort_multipart_upload(**kwargs)
+
+
+async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Migrate existing entries to the latest schema."""
+    if entry.version > 1:
+        return False
+
+    if entry.version == 1 and entry.minor_version < 2:
+        new_data = {**entry.data}
+        new_data.setdefault(CONF_ADDITIONAL_HOUSE, "")
+
+        try:
+            base_prefix = build_storage_prefix(
+                new_data.get(CONF_ROOT_PATH, DEFAULT_ROOT_PATH),
+                new_data[CONF_INSTALLATION_NAME],
+            )
+            new_data[CONF_PREFIX] = append_storage_subpath(
+                base_prefix,
+                new_data.get(CONF_ADDITIONAL_HOUSE, ""),
+            )
+        except (KeyError, ValueError):
+            _LOGGER.exception("Could not migrate entry %s", entry.entry_id)
+            return False
+
+        hass.config_entries.async_update_entry(
+            entry,
+            data=new_data,
+            title=build_entry_title(
+                new_data[CONF_INSTALLATION_NAME],
+                new_data.get(CONF_ADDITIONAL_HOUSE, ""),
+            ),
+            version=1,
+            minor_version=2,
+        )
+
+    return True
 
 
 async def async_setup_entry(

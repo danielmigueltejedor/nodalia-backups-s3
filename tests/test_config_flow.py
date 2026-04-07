@@ -264,3 +264,8 @@ class TestSchemas:
         for key in SCHEMA_SETUP.schema:
             if str(key) == CONF_BUCKET:
                 assert key.default() == DEFAULT_BUCKET
+
+    def test_setup_schema_shows_additional_house_field(self):
+        for key in SCHEMA_SETUP.schema:
+            if str(key) == CONF_ADDITIONAL_HOUSE:
+                assert key.default() == ""

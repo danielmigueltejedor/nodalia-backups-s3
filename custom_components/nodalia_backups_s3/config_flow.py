@@ -84,7 +84,7 @@ def _probe_connection(
 SCHEMA_SETUP = vol.Schema(
     {
         vol.Required(CONF_INSTALLATION_NAME): cv.string,
-        vol.Optional(CONF_ADDITIONAL_HOUSE): cv.string,
+        vol.Required(CONF_ADDITIONAL_HOUSE, default=""): cv.string,
         vol.Required(CONF_BUCKET, default=DEFAULT_BUCKET): cv.string,
         vol.Required(CONF_ACCESS_KEY_ID): cv.string,
         vol.Required(CONF_SECRET_ACCESS_KEY): _PASSWORD,
@@ -103,7 +103,7 @@ SCHEMA_CREDENTIALS = vol.Schema(
 SCHEMA_FULL_EDIT = vol.Schema(
     {
         vol.Required(CONF_INSTALLATION_NAME): cv.string,
-        vol.Optional(CONF_ADDITIONAL_HOUSE): cv.string,
+        vol.Required(CONF_ADDITIONAL_HOUSE, default=""): cv.string,
         vol.Required(CONF_BUCKET): cv.string,
         vol.Required(CONF_ACCESS_KEY_ID): cv.string,
         vol.Optional(CONF_SECRET_ACCESS_KEY): _PASSWORD,
@@ -117,6 +117,7 @@ class NodaliaWasabiBackupsConfigFlow(ConfigFlow, domain=DOMAIN):
     """Guide the user through setup, re-auth and reconfiguration."""
 
     VERSION = 1
+    MINOR_VERSION = 2
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
