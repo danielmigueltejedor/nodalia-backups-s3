@@ -5,18 +5,31 @@ import pytest
 from custom_components.nodalia_backups_s3.utils import (
     build_storage_prefix,
     build_wasabi_endpoint,
+    normalize_installation_path,
     normalize_root_path,
     slugify_segment,
 )
 
 
 def test_slugify_segment_normalizes_text():
-    assert slugify_segment("Cliente Demo / Piso 1") == "cliente-demo-piso-1"
+    assert slugify_segment("Cliente Demo") == "cliente-demo"
 
 
 def test_slugify_segment_rejects_empty_values():
     with pytest.raises(ValueError):
-        slugify_segment("///")
+        slugify_segment("   ")
+
+
+def test_normalize_installation_path_keeps_nested_structure():
+    assert (
+        normalize_installation_path("Cliente Demo / Casa 1")
+        == "cliente-demo/casa-1"
+    )
+
+
+def test_normalize_installation_path_rejects_only_separators():
+    with pytest.raises(ValueError):
+        normalize_installation_path("///")
 
 
 def test_normalize_root_path_keeps_nested_structure():
@@ -27,6 +40,13 @@ def test_build_storage_prefix_combines_root_and_slug():
     assert (
         build_storage_prefix("Clientes", "Casa Daniel")
         == "clientes/casa-daniel"
+    )
+
+
+def test_build_storage_prefix_preserves_subfolders_in_installation_name():
+    assert (
+        build_storage_prefix("homeassistant", "cliente/casa1")
+        == "homeassistant/cliente/casa1"
     )
 
 

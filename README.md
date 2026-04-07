@@ -37,6 +37,11 @@ Desde `Settings > Devices & Services > Add Integration`, busca `Nodalia Wasabi B
 
 La integracion genera automaticamente el endpoint `https://s3.<region>.wasabisys.com` y el prefijo final `<root_path>/<installation_slug>`.
 
+Si quieres separar varias instalaciones de un mismo cliente, puedes usar `/` en `Installation name`. Por ejemplo:
+
+- `cliente/casa1` -> `homeassistant/cliente/casa1`
+- `cliente/casa2` -> `homeassistant/cliente/casa2`
+
 ## Recomendacion de seguridad
 
 Lo ideal es entregar a cada cliente una credencial distinta, limitada solo a su prefijo. Un ejemplo de politica compatible con S3 seria:

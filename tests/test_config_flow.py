@@ -128,6 +128,21 @@ class TestPrepareData:
         assert data[CONF_REGION] == "eu-west-2"
         assert data[CONF_PREFIX] == "homeassistant/cliente-demo"
 
+    async def test_prepare_data_preserves_installation_subfolders(self, flow):
+        data, errors = flow._prepare_data(
+            {
+                "installation_name": "Cliente/Casa 1",
+                "bucket": "nodalia-backups",
+                "access_key_id": "ACCESS",
+                "secret_access_key": "SECRET",
+                "region": "eu-west-2",
+                "root_path": "homeassistant",
+            }
+        )
+
+        assert errors == {}
+        assert data[CONF_PREFIX] == "homeassistant/cliente/casa-1"
+
     async def test_prepare_data_rejects_empty_installation_name(self, flow):
         _, errors = flow._prepare_data(
             {

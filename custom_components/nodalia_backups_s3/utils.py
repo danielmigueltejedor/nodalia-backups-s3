@@ -27,12 +27,24 @@ def slugify_segment(value: str) -> str:
     """Convert a user-facing name into a stable object-storage path segment."""
     cleaned = value.strip().lower()
     cleaned = cleaned.replace("_", "-")
-    cleaned = cleaned.replace("/", "-")
     cleaned = _INVALID_SEGMENT_CHARS.sub("-", cleaned)
     cleaned = _MULTIPLE_DASHES.sub("-", cleaned).strip("-")
     if not cleaned:
         raise ValueError("invalid_installation_name")
     return cleaned
+
+
+def normalize_installation_path(value: str) -> str:
+    """Normalize an installation path, preserving nested path segments."""
+    parts: list[str] = []
+    for part in value.split("/"):
+        part = part.strip()
+        if not part:
+            continue
+        parts.append(slugify_segment(part))
+    if not parts:
+        raise ValueError("invalid_installation_name")
+    return "/".join(parts)
 
 
 def normalize_root_path(value: str) -> str:
@@ -58,7 +70,7 @@ def normalize_region(value: str) -> str:
 def build_storage_prefix(root_path: str, installation_name: str) -> str:
     """Build the storage prefix used to isolate one customer installation."""
     parent = normalize_root_path(root_path)
-    installation = slugify_segment(installation_name)
+    installation = normalize_installation_path(installation_name)
     return f"{parent}/{installation}" if parent else installation
 
 

@@ -13,7 +13,7 @@
           "root_path": "Ruta raiz"
         },
         "data_description": {
-          "installation_name": "Nombre legible del cliente o de la instalacion. Se convierte en un slug limpio para aislar los datos.",
+          "installation_name": "Nombre legible del cliente o de la instalacion. Usa / para crear subcarpetas, por ejemplo cliente/casa1.",
           "bucket": "Bucket existente de Wasabi donde se guardaran los backups. El formulario empieza con nodalia-backups, pero puedes cambiarlo.",
           "access_key_id": "Clave con permiso para acceder al prefijo de esta instalacion.",
           "secret_access_key": "Secreto asociado a la clave anterior.",
@@ -45,7 +45,7 @@
           "root_path": "Ruta raiz"
         },
         "data_description": {
-          "installation_name": "Nombre legible del cliente o de la instalacion.",
+          "installation_name": "Nombre legible del cliente o de la instalacion. Usa / para crear subcarpetas, por ejemplo cliente/casa1.",
           "bucket": "Bucket existente de Wasabi donde se guardaran los backups. El formulario empieza con nodalia-backups, pero puedes cambiarlo.",
           "access_key_id": "Clave con permiso para acceder al prefijo de esta instalacion.",
           "secret_access_key": "Secreto asociado a la clave anterior. Dejalo vacio para conservar el secreto actual.",

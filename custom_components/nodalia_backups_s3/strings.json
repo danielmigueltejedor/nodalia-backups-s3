@@ -13,7 +13,7 @@
           "root_path": "Root path"
         },
         "data_description": {
-          "installation_name": "Friendly name of the client or installation. It is converted into a clean slug for storage isolation.",
+          "installation_name": "Friendly name of the client or installation. Use / to create subfolders, for example cliente/casa1.",
           "bucket": "Existing Wasabi bucket where the backups will be stored. The form starts with nodalia-backups, but you can change it.",
           "access_key_id": "Access key with permission to access this installation prefix.",
           "secret_access_key": "Secret key for the access key above.",
@@ -45,7 +45,7 @@
           "root_path": "Root path"
         },
         "data_description": {
-          "installation_name": "Friendly name of the client or installation.",
+          "installation_name": "Friendly name of the client or installation. Use / to create subfolders, for example cliente/casa1.",
           "bucket": "Existing Wasabi bucket where the backups will be stored. The form starts with nodalia-backups, but you can change it.",
           "access_key_id": "Access key with permission to access this installation prefix.",
           "secret_access_key": "Secret key for the access key above. Leave empty to keep the current secret.",
