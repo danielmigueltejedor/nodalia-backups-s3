@@ -48,7 +48,7 @@
           "installation_name": "Nombre legible del cliente o de la instalacion.",
           "bucket": "Bucket existente de Wasabi donde se guardaran los backups. El formulario empieza con nodalia-backups, pero puedes cambiarlo.",
           "access_key_id": "Clave con permiso para acceder al prefijo de esta instalacion.",
-          "secret_access_key": "Secreto asociado a la clave anterior.",
+          "secret_access_key": "Secreto asociado a la clave anterior. Dejalo vacio para conservar el secreto actual.",
           "region": "Region de Wasabi. El formulario empieza con eu-west-2, pero puedes cambiarla.",
           "root_path": "Carpeta opcional antes del slug de la instalacion. El formulario empieza con homeassistant, pero puedes cambiarla."
         }

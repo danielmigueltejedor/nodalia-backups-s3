@@ -101,7 +101,7 @@ SCHEMA_FULL_EDIT = vol.Schema(
         vol.Required(CONF_INSTALLATION_NAME): cv.string,
         vol.Required(CONF_BUCKET): cv.string,
         vol.Required(CONF_ACCESS_KEY_ID): cv.string,
-        vol.Required(CONF_SECRET_ACCESS_KEY): _PASSWORD,
+        vol.Optional(CONF_SECRET_ACCESS_KEY): _PASSWORD,
         vol.Required(CONF_REGION): cv.string,
         vol.Optional(CONF_ROOT_PATH): cv.string,
     }
@@ -183,7 +183,10 @@ class NodaliaWasabiBackupsConfigFlow(ConfigFlow, domain=DOMAIN):
         target = self._get_reconfigure_entry()
 
         if user_input is not None:
-            data, errors = self._prepare_data(user_input)
+            submitted = dict(user_input)
+            if not submitted.get(CONF_SECRET_ACCESS_KEY):
+                submitted[CONF_SECRET_ACCESS_KEY] = target.data[CONF_SECRET_ACCESS_KEY]
+            data, errors = self._prepare_data({**target.data, **submitted})
             if (
                 not errors
                 and self._entry_exists(
@@ -209,7 +212,6 @@ class NodaliaWasabiBackupsConfigFlow(ConfigFlow, domain=DOMAIN):
                 CONF_INSTALLATION_NAME,
                 CONF_BUCKET,
                 CONF_ACCESS_KEY_ID,
-                CONF_SECRET_ACCESS_KEY,
                 CONF_REGION,
                 CONF_ROOT_PATH,
             }

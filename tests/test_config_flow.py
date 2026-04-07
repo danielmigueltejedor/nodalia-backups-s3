@@ -142,6 +142,30 @@ class TestPrepareData:
 
         assert errors == {CONF_INSTALLATION_NAME: "invalid_installation_name"}
 
+    async def test_reconfigure_can_keep_existing_secret(self, flow, sample_config):
+        target = MagicMock()
+        target.data = sample_config
+        target.entry_id = "entry-1"
+        flow._get_reconfigure_entry = MagicMock(return_value=target)
+        flow._async_current_entries = MagicMock(return_value=[target])
+        flow._try_connect = AsyncMock(return_value={})
+        flow.async_update_reload_and_abort = MagicMock(return_value={"type": "abort"})
+
+        result = await flow.async_step_reconfigure(
+            {
+                "installation_name": "Cliente Demo",
+                "bucket": "nodalia-backups",
+                "access_key_id": "ACCESS123",
+                "region": "eu-west-2",
+                "root_path": "homeassistant",
+            }
+        )
+
+        flow._try_connect.assert_awaited_once()
+        called_data = flow._try_connect.await_args.args[0]
+        assert called_data["secret_access_key"] == sample_config["secret_access_key"]
+        assert result == {"type": "abort"}
+
     async def test_try_connect_maps_bucket_error(self, flow, sample_config):
         flow.hass.async_add_executor_job.side_effect = ClientError(
             {"Error": {"Code": "NoSuchBucket", "Message": "Not Found"}},

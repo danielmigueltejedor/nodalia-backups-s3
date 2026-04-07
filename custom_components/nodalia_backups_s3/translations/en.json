@@ -48,7 +48,7 @@
           "installation_name": "Friendly name of the client or installation.",
           "bucket": "Existing Wasabi bucket where the backups will be stored. The form starts with nodalia-backups, but you can change it.",
           "access_key_id": "Access key with permission to access this installation prefix.",
-          "secret_access_key": "Secret key for the access key above.",
+          "secret_access_key": "Secret key for the access key above. Leave empty to keep the current secret.",
           "region": "Wasabi region. The form starts with eu-west-2, but you can change it.",
           "root_path": "Optional folder before the installation slug. The form starts with homeassistant, but you can change it."
         }
