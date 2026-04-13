@@ -95,7 +95,10 @@ class WasabiStorageGateway:
         """Close the Wasabi client."""
         if self._client_context is None:
             return
-        await self._client_context.__aexit__(None, None, None)
+        # Use to_thread to avoid blocking operations in event loop
+        await asyncio.to_thread(
+            self._client_context.__aexit__, None, None, None
+        )
         self._client_context = None
         self._client = None
 
