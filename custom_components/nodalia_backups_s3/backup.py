@@ -215,6 +215,7 @@ class NodaliaWasabiBackupAgent(BackupAgent):
             for obj in page.get("Contents", []):
                 if not obj["Key"].endswith(".metadata.json"):
                     continue
+                response: dict[str, Any] | None = None
                 try:
                     response = await self._gateway.get_object(
                         Bucket=self._bucket,
@@ -225,6 +226,11 @@ class NodaliaWasabiBackupAgent(BackupAgent):
                 except (BotoCoreError, json.JSONDecodeError) as exc:
                     _LOGGER.warning("Skipping %s: %s", obj["Key"], exc)
                     continue
+                finally:
+                    if response is not None:
+                        close = getattr(response["Body"], "close", None)
+                        if callable(close):
+                            await close()
                 result[parsed.backup_id] = parsed
 
             if page.get("IsTruncated"):

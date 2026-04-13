@@ -2,17 +2,15 @@
 
 from __future__ import annotations
 
-import asyncio
 from collections.abc import Mapping
-import functools
 from typing import Any
 
-from aiobotocore.session import AioSession
 from botocore.exceptions import (
     ClientError,
     ConnectionError as BotoConnectionError,
     ParamValidationError,
 )
+from botocore.session import Session
 import voluptuous as vol
 
 from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
@@ -60,25 +58,26 @@ def _probe_connection(
     prefix: str,
 ) -> None:
     """Validate that the credentials can list, write, and delete objects."""
-
-    async def _check() -> None:
-        endpoint = build_wasabi_endpoint(region)
-        probe_root = f"{prefix.strip('/')}/{STORAGE_DIR}/"
-        probe_key = f"{probe_root}{PROBE_OBJECT_NAME}"
-        session = AioSession()
-        async with session.create_client(
-            "s3",
-            endpoint_url=endpoint,
-            aws_access_key_id=key_id,
-            aws_secret_access_key=secret,
-            region_name=region,
-            config=create_s3_client_config(),
-        ) as client:
-            await client.list_objects_v2(Bucket=bucket, Prefix=probe_root, MaxKeys=1)
-            await client.put_object(Bucket=bucket, Key=probe_key, Body=b"")
-            await client.delete_object(Bucket=bucket, Key=probe_key)
-
-    asyncio.run(_check())
+    endpoint = build_wasabi_endpoint(region)
+    probe_root = f"{prefix.strip('/')}/{STORAGE_DIR}/"
+    probe_key = f"{probe_root}{PROBE_OBJECT_NAME}"
+    session = Session()
+    client = session.create_client(
+        "s3",
+        endpoint_url=endpoint,
+        aws_access_key_id=key_id,
+        aws_secret_access_key=secret,
+        region_name=region,
+        config=create_s3_client_config(),
+    )
+    try:
+        client.list_objects_v2(Bucket=bucket, Prefix=probe_root, MaxKeys=1)
+        client.put_object(Bucket=bucket, Key=probe_key, Body=b"")
+        client.delete_object(Bucket=bucket, Key=probe_key)
+    finally:
+        close = getattr(client, "close", None)
+        if callable(close):
+            close()
 
 
 SCHEMA_SETUP = vol.Schema(

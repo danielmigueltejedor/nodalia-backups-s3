@@ -2,15 +2,17 @@
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterator, Callable
+import functools
 import logging
-from typing import Any, cast
+from typing import Any, TypeVar, cast
 
-from aiobotocore.session import AioSession
 from botocore.exceptions import (
     ClientError,
     ConnectionError as BotoConnectionError,
     ParamValidationError,
 )
+from botocore.session import Session
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -44,36 +46,74 @@ from .utils import (
 
 NodaliaBackupsEntry = ConfigEntry["WasabiStorageGateway"]
 _LOGGER = logging.getLogger(__name__)
+T = TypeVar("T")
+
+
+class _ExecutorStreamBody:
+    """Expose a sync streaming body through async helpers."""
+
+    def __init__(self, gateway: "WasabiStorageGateway", body: Any) -> None:
+        self._gateway = gateway
+        self._body = body
+
+    async def read(self, amt: int | None = None) -> bytes:
+        """Read bytes from the streaming body in the executor."""
+        if amt is None:
+            return await self._gateway._async_call(self._body.read)
+        return await self._gateway._async_call(self._body.read, amt)
+
+    async def iter_chunks(self, chunk_size: int = 1024 * 1024) -> AsyncIterator[bytes]:
+        """Yield body chunks without blocking the event loop."""
+        try:
+            while chunk := await self.read(chunk_size):
+                yield chunk
+        finally:
+            await self.close()
+
+    async def close(self) -> None:
+        """Close the underlying streaming body."""
+        close = getattr(self._body, "close", None)
+        if callable(close):
+            await self._gateway._async_call(close)
 
 
 class WasabiStorageGateway:
-    """Thin async wrapper around an aiobotocore S3 client."""
+    """Async wrapper around a blocking botocore S3 client."""
 
     def __init__(
         self,
         *,
+        hass: HomeAssistant,
         key_id: str,
         secret: str,
         region: str,
         bucket: str,
         prefix: str,
     ) -> None:
+        self._hass = hass
         self._bucket = bucket
         self._region = region
         self._endpoint = build_wasabi_endpoint(region)
         self._prefix = prefix.strip("/")
-        self._session = AioSession()
-        self._client_context: Any = None
         self._client: Any = None
         self._key_id = key_id
         self._secret = secret
 
-    async def async_start(self) -> None:
-        """Open the Wasabi client and verify listing access for this prefix."""
-        if self._client is not None:
-            return
+    async def _async_call(
+        self,
+        func: Callable[..., T],
+        *args: Any,
+        **kwargs: Any,
+    ) -> T:
+        """Run a blocking call in Home Assistant's executor."""
+        return await self._hass.async_add_executor_job(
+            functools.partial(func, *args, **kwargs)
+        )
 
-        self._client_context = self._session.create_client(
+    def _create_client(self) -> Any:
+        """Create a blocking botocore client."""
+        session = Session()
+        return session.create_client(
             "s3",
             endpoint_url=self._endpoint,
             aws_access_key_id=self._key_id,
@@ -81,47 +121,63 @@ class WasabiStorageGateway:
             region_name=self._region,
             config=create_s3_client_config(),
         )
-        self._client = await self._client_context.__aenter__()
-        await self._client.list_objects_v2(
-            Bucket=self._bucket,
-            Prefix=f"{self._prefix}/{STORAGE_DIR}/",
-            MaxKeys=1,
-        )
+
+    async def async_start(self) -> None:
+        """Open the Wasabi client and verify listing access for this prefix."""
+        if self._client is not None:
+            return
+
+        self._client = await self._async_call(self._create_client)
+        try:
+            await self.list_objects_v2(
+                Bucket=self._bucket,
+                Prefix=f"{self._prefix}/{STORAGE_DIR}/",
+                MaxKeys=1,
+            )
+        except Exception:
+            await self.async_stop()
+            raise
 
     async def async_stop(self) -> None:
         """Close the Wasabi client."""
-        if self._client_context is None:
+        if self._client is None:
             return
-        await self._client_context.__aexit__(None, None, None)
-        self._client_context = None
+
+        close = getattr(self._client, "close", None)
+        if callable(close):
+            await self._async_call(close)
         self._client = None
 
     async def head_bucket(self, **kwargs: Any) -> dict[str, Any]:
-        return await self._client.head_bucket(**kwargs)
+        return await self._async_call(self._client.head_bucket, **kwargs)
 
     async def list_objects_v2(self, **kwargs: Any) -> dict[str, Any]:
-        return await self._client.list_objects_v2(**kwargs)
+        return await self._async_call(self._client.list_objects_v2, **kwargs)
 
     async def get_object(self, **kwargs: Any) -> dict[str, Any]:
-        return await self._client.get_object(**kwargs)
+        response = dict(await self._async_call(self._client.get_object, **kwargs))
+        response["Body"] = _ExecutorStreamBody(self, response["Body"])
+        return response
 
     async def put_object(self, **kwargs: Any) -> dict[str, Any]:
-        return await self._client.put_object(**kwargs)
+        return await self._async_call(self._client.put_object, **kwargs)
 
     async def delete_object(self, **kwargs: Any) -> dict[str, Any]:
-        return await self._client.delete_object(**kwargs)
+        return await self._async_call(self._client.delete_object, **kwargs)
 
     async def create_multipart_upload(self, **kwargs: Any) -> dict[str, Any]:
-        return await self._client.create_multipart_upload(**kwargs)
+        return await self._async_call(self._client.create_multipart_upload, **kwargs)
 
     async def upload_part(self, **kwargs: Any) -> dict[str, Any]:
-        return await self._client.upload_part(**kwargs)
+        return await self._async_call(self._client.upload_part, **kwargs)
 
     async def complete_multipart_upload(self, **kwargs: Any) -> dict[str, Any]:
-        return await self._client.complete_multipart_upload(**kwargs)
+        return await self._async_call(
+            self._client.complete_multipart_upload, **kwargs
+        )
 
     async def abort_multipart_upload(self, **kwargs: Any) -> dict[str, Any]:
-        return await self._client.abort_multipart_upload(**kwargs)
+        return await self._async_call(self._client.abort_multipart_upload, **kwargs)
 
 
 async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -167,6 +223,7 @@ async def async_setup_entry(
     cfg = cast(dict[str, Any], entry.data)
 
     gateway = WasabiStorageGateway(
+        hass=hass,
         key_id=cfg[CONF_ACCESS_KEY_ID],
         secret=cfg[CONF_SECRET_ACCESS_KEY],
         region=cfg[CONF_REGION],

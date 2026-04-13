@@ -28,19 +28,16 @@ from custom_components.nodalia_backups_s3.const import (
 class TestProbeConnection:
     """Tests for the synchronous Wasabi connection probe."""
 
-    @patch("custom_components.nodalia_backups_s3.config_flow.AioSession")
+    @patch("custom_components.nodalia_backups_s3.config_flow.Session")
     def test_success(self, mock_session_cls):
-        mock_client = AsyncMock()
-        mock_client.list_objects_v2 = AsyncMock(return_value={})
-        mock_client.put_object = AsyncMock(return_value={})
-        mock_client.delete_object = AsyncMock(return_value={})
-
-        context = AsyncMock()
-        context.__aenter__ = AsyncMock(return_value=mock_client)
-        context.__aexit__ = AsyncMock(return_value=False)
+        mock_client = MagicMock()
+        mock_client.list_objects_v2.return_value = {}
+        mock_client.put_object.return_value = {}
+        mock_client.delete_object.return_value = {}
+        mock_client.close = MagicMock()
 
         mock_session = MagicMock()
-        mock_session.create_client.return_value = context
+        mock_session.create_client.return_value = mock_client
         mock_session_cls.return_value = mock_session
 
         _probe_connection(
@@ -50,23 +47,19 @@ class TestProbeConnection:
             bucket="nodalia-backups",
             prefix="homeassistant/demo",
         )
+        mock_client.close.assert_called_once_with()
 
-    @patch("custom_components.nodalia_backups_s3.config_flow.AioSession")
+    @patch("custom_components.nodalia_backups_s3.config_flow.Session")
     def test_client_error_propagates(self, mock_session_cls):
-        mock_client = AsyncMock()
-        mock_client.list_objects_v2 = AsyncMock(
-            side_effect=ClientError(
-                {"Error": {"Code": "AccessDenied", "Message": "Forbidden"}},
-                "ListObjectsV2",
-            )
+        mock_client = MagicMock()
+        mock_client.list_objects_v2.side_effect = ClientError(
+            {"Error": {"Code": "AccessDenied", "Message": "Forbidden"}},
+            "ListObjectsV2",
         )
-
-        context = AsyncMock()
-        context.__aenter__ = AsyncMock(return_value=mock_client)
-        context.__aexit__ = AsyncMock(return_value=False)
+        mock_client.close = MagicMock()
 
         mock_session = MagicMock()
-        mock_session.create_client.return_value = context
+        mock_session.create_client.return_value = mock_client
         mock_session_cls.return_value = mock_session
 
         with pytest.raises(ClientError):
@@ -77,20 +70,18 @@ class TestProbeConnection:
                 bucket="nodalia-backups",
                 prefix="homeassistant/demo",
             )
+        mock_client.close.assert_called_once_with()
 
-    @patch("custom_components.nodalia_backups_s3.config_flow.AioSession")
+    @patch("custom_components.nodalia_backups_s3.config_flow.Session")
     def test_connection_error_propagates(self, mock_session_cls):
-        mock_client = AsyncMock()
-        mock_client.list_objects_v2 = AsyncMock(
-            side_effect=BotoConnectionError(error="unreachable")
+        mock_client = MagicMock()
+        mock_client.list_objects_v2.side_effect = BotoConnectionError(
+            error="unreachable"
         )
-
-        context = AsyncMock()
-        context.__aenter__ = AsyncMock(return_value=mock_client)
-        context.__aexit__ = AsyncMock(return_value=False)
+        mock_client.close = MagicMock()
 
         mock_session = MagicMock()
-        mock_session.create_client.return_value = context
+        mock_session.create_client.return_value = mock_client
         mock_session_cls.return_value = mock_session
 
         with pytest.raises(BotoConnectionError):
@@ -101,6 +92,7 @@ class TestProbeConnection:
                 bucket="nodalia-backups",
                 prefix="homeassistant/demo",
             )
+        mock_client.close.assert_called_once_with()
 
 
 class TestPrepareData:
