@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 import logging
 from typing import Any, cast
 
@@ -82,9 +81,7 @@ class WasabiStorageGateway:
             region_name=self._region,
             config=create_s3_client_config(),
         )
-        # Use to_thread to avoid blocking operations in event loop
-        # botocore performs file I/O during client initialization
-        self._client = await asyncio.to_thread(self._client_context.__aenter__)
+        self._client = await self._client_context.__aenter__()
         await self._client.list_objects_v2(
             Bucket=self._bucket,
             Prefix=f"{self._prefix}/{STORAGE_DIR}/",
@@ -95,10 +92,7 @@ class WasabiStorageGateway:
         """Close the Wasabi client."""
         if self._client_context is None:
             return
-        # Use to_thread to avoid blocking operations in event loop
-        await asyncio.to_thread(
-            self._client_context.__aexit__, None, None, None
-        )
+        await self._client_context.__aexit__(None, None, None)
         self._client_context = None
         self._client = None
 
