@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import functools
 from collections.abc import Mapping
 from typing import Any
 
@@ -83,7 +84,7 @@ def _probe_connection(
 SCHEMA_SETUP = vol.Schema(
     {
         vol.Required(CONF_INSTALLATION_NAME): cv.string,
-        vol.Required(CONF_ADDITIONAL_HOUSE, default=""): cv.string,
+        vol.Optional(CONF_ADDITIONAL_HOUSE, default=""): cv.string,
         vol.Required(CONF_BUCKET, default=DEFAULT_BUCKET): cv.string,
         vol.Required(CONF_ACCESS_KEY_ID): cv.string,
         vol.Required(CONF_SECRET_ACCESS_KEY): _PASSWORD,
@@ -102,7 +103,7 @@ SCHEMA_CREDENTIALS = vol.Schema(
 SCHEMA_FULL_EDIT = vol.Schema(
     {
         vol.Required(CONF_INSTALLATION_NAME): cv.string,
-        vol.Required(CONF_ADDITIONAL_HOUSE, default=""): cv.string,
+        vol.Optional(CONF_ADDITIONAL_HOUSE, default=""): cv.string,
         vol.Required(CONF_BUCKET): cv.string,
         vol.Required(CONF_ACCESS_KEY_ID): cv.string,
         vol.Optional(CONF_SECRET_ACCESS_KEY): _PASSWORD,
